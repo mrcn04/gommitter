@@ -20,7 +20,7 @@ func main() {
 
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: os.Getenv("GITHUB_KEY")},
+		&oauth2.Token{AccessToken: os.Getenv("GH_KEY")},
 	)
 	tc := oauth2.NewClient(ctx, ts)
 
@@ -31,7 +31,7 @@ func main() {
 		Private: github.Bool(true),
 	}
 
-	reps, _, err := client.Repositories.Get(ctx, os.Getenv("GITHUB_USERNAME"), os.Getenv("REPO_NAME"))
+	reps, _, err := client.Repositories.Get(ctx, os.Getenv("GH_USERNAME"), os.Getenv("REPO_NAME"))
 	if err != nil {
 		fmt.Printf("Repo is not found %+v\n", err)
 		return
@@ -39,5 +39,5 @@ func main() {
 	fmt.Printf("%+v \n", *reps.Name)
 
 	fmt.Println("hello world")
-	fmt.Println(os.Getenv("GITHUB_KEY"))
+	fmt.Println(os.Getenv("GH_KEY"))
 }
