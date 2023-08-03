@@ -1,4 +1,4 @@
-### gommitter
+## gommitter
 
 Daily automatic committer for Github.
 
