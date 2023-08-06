@@ -11,7 +11,7 @@ make run
 #### Required Env Variables
 
 ```shell
-GH_KEY= # Github personal access token
+GH_KEY=  #Github personal access token
 GH_USERNAME=
 REPO_NAME=
 ```
