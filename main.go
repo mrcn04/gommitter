@@ -3,20 +3,15 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/google/go-github/v53/github"
-	"github.com/joho/godotenv"
 	"golang.org/x/oauth2"
 )
 
 func main() {
 
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("Could not load the env vars")
-	}
+	loadEnv()
 
 	ctx := context.Background()
 	gc := createGithubClient(ctx)
