@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-
-	"github.com/google/go-github/v53/github"
 )
 
 func main() {
@@ -14,11 +12,6 @@ func main() {
 
 	ctx := context.Background()
 	gc := createGithubClient(ctx)
-
-	_ = &github.Repository{
-		Name:    github.String("testo"),
-		Private: github.Bool(true),
-	}
 
 	reps, _, err := gc.Repositories.Get(ctx, os.Getenv("GH_USERNAME"), os.Getenv("REPO_NAME"))
 	if err != nil {
