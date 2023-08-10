@@ -21,5 +21,4 @@ func main() {
 	fmt.Printf("%+v \n", *reps.Name)
 
 	fmt.Println("hello world")
-	fmt.Println(os.Getenv("GH_KEY"))
 }
