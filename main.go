@@ -10,8 +10,6 @@ func main() {
 
 	loadEnv()
 
-	fmt.Println("hello world")
-
 	ctx := context.Background()
 	gc := createGithubClient(ctx)
 
