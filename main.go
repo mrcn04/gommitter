@@ -18,5 +18,9 @@ func main() {
 		fmt.Printf("Repo is not found %+v\n", err)
 		return
 	}
+
+	// if repo is found, add a commit
+	// push
+
 	fmt.Printf("%+v \n", *reps.Name)
 }
