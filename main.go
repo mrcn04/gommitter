@@ -20,6 +20,7 @@ func main() {
 	}
 
 	// if repo is found, add a commit
+	// with command
 	// push
 
 	fmt.Printf("%+v \n", *reps.Name)
