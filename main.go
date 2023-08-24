@@ -13,7 +13,10 @@ func main() {
 	ctx := context.Background()
 	gc := createGithubClient(ctx)
 
-	reps, _, err := gc.Repositories.Get(ctx, os.Getenv("GH_USERNAME"), os.Getenv("REPO_NAME"))
+	u := os.Getenv("GH_USERNAME")
+	r := os.Getenv("REPO_NAME")
+
+	_, _, err := gc.Repositories.Get(ctx, u, r)
 	if err != nil {
 		fmt.Printf("Repo is not found %+v\n", err)
 		return
@@ -22,6 +25,4 @@ func main() {
 	// if repo is found, add a commit
 	// with command, write something to txt file
 	// push
-
-	fmt.Printf("%+v \n", *reps.Name)
 }
