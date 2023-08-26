@@ -2,10 +2,18 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"log"
 	"os"
 
 	"github.com/google/go-github/v53/github"
 	"golang.org/x/oauth2"
+)
+
+const (
+	Branch = "master"
+	Type   = "commit"
+	Ref    = "refs/heads/master"
 )
 
 func createGithubClient(ctx context.Context) *github.Client {
@@ -16,3 +24,112 @@ func createGithubClient(ctx context.Context) *github.Client {
 	client := github.NewClient(tc)
 	return client
 }
+
+func checkIfRepoExists(ctx context.Context, gc *github.Client, u string, r string) {
+	_, _, err := gc.Repositories.Get(ctx, u, r)
+	if err != nil {
+		log.Fatalf("Repo is not found %+v\n", err)
+	}
+}
+
+func createCommit(ctx context.Context, gc *github.Client, u string, r string, file string, content string, commit string) error {
+	// Get the default branch
+	db, _, err := gc.Repositories.GetBranch(ctx, u, r, Branch, false)
+	if err != nil {
+		return err
+	}
+
+	// Get the existing content of the file
+	ec, _, _, err := gc.Repositories.GetContents(ctx, u, r, file, &github.RepositoryContentGetOptions{
+		Ref: *db.Commit.SHA,
+	})
+	if err != nil {
+		fmt.Println(4)
+		return err
+	}
+
+	// Combine existing content and new content with a newline
+	updatedContent := *ec.Content + "\n" + content
+	fmt.Printf("%+v\n", updatedContent)
+
+	newBlob, _, err := gc.Git.CreateBlob(ctx, u, r, &github.Blob{
+		Content:  github.String(updatedContent),
+		Encoding: github.String("utf-8"),
+	})
+	if err != nil {
+		fmt.Println(2)
+		return err
+	}
+
+	// Get the tree associated with the latest commit
+	tree, _, err := gc.Git.GetTree(ctx, u, r, *db.Commit.SHA, true)
+	if err != nil {
+		fmt.Println(1)
+		return err
+	}
+	// Add the new file entry to the existing tree
+	newTreeEntries := append(tree.Entries, &github.TreeEntry{
+		Path: github.String(file),
+		Mode: github.String("100644"), // File mode
+		Type: github.String("blob"),
+		SHA:  newBlob.SHA,
+	})
+
+	// Create a new tree with the updated tree entries
+	newTree, _, _ := gc.Git.CreateTree(ctx, u, r, *tree.SHA, newTreeEntries)
+
+	// Create a new commit based on the new tree
+	newCommit, _, err := gc.Git.CreateCommit(ctx, u, r, &github.Commit{
+		Message: github.String(commit),
+		Tree:    newTree,
+		Parents: []*github.Commit{{SHA: db.Commit.SHA}},
+	})
+	if err != nil {
+		fmt.Println(3)
+		return err
+	}
+
+	// Update the reference (branch) to point to the new commit
+	_, _, err = gc.Git.UpdateRef(ctx, u, r, &github.Reference{
+		Ref: github.String(Ref),
+		Object: &github.GitObject{
+			Type: github.String(Type),
+			SHA:  newCommit.SHA,
+		},
+	}, true)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("New commit SHA: %s\n Commit message: %s\n", *newCommit.SHA, *newCommit.Message)
+	return nil
+}
+
+// func createCommit(ctx context.Context, gc *github.Client, u string, r string, file string, content string, commit string) error {
+// 	// Get the latest commit SHA of the default branch
+// 	latestCommit, _, _ := gc.Repositories.GetBranch(ctx, u, r, "master", false)
+
+// 	// Get the existing content of the file
+// 	existingContent, _, _, _ := gc.Repositories.GetContents(ctx, u, r, file, &github.RepositoryContentGetOptions{
+// 		Ref: *latestCommit.Commit.SHA,
+// 	})
+
+// 	// Combine existing content and new content with a newline
+// 	updatedContent := *existingContent.Content + "\n" + content
+
+// 	// Update the file content
+// 	_, _, err := gc.Repositories.UpdateFile(ctx, u, r, file, &github.RepositoryContentFileOptions{
+// 		Message: github.String(commit),
+// 		Content: []byte(updatedContent), // Convert content to []byte
+// 		SHA:     existingContent.SHA,
+// 	})
+
+// 	if err != nil {
+// 		fmt.Printf("Error updating file: %v\n", err)
+// 		return err
+// 	}
+
+// 	fmt.Printf("File updated successfully.\n")
+
+// 	return nil
+// }
