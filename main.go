@@ -25,7 +25,11 @@ func main() {
 	u := os.Getenv("GH_USERNAME")
 	r := os.Getenv("REPO_NAME")
 
-	checkIfRepoExists(ctx, gc, u, r)
+	err := checkIfRepoExists(ctx, gc, u, r)
+	if err != nil {
+		fmt.Printf("Repo is not found %+v\n", err)
+		return
+	}
 
 	commit := "Daily automated commit"
 	file := "commits.txt"
@@ -33,7 +37,7 @@ func main() {
 
 	fmt.Println(content)
 
-	err := createCommit(ctx, gc, u, r, file, content, commit)
+	err = createCommit(ctx, gc, u, r, file, content, commit)
 	if err != nil {
 		fmt.Printf("Error occurred while creating a commit %+v\n", err)
 		return

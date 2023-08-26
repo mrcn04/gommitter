@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/google/go-github/v53/github"
@@ -25,11 +24,12 @@ func createGithubClient(ctx context.Context) *github.Client {
 	return client
 }
 
-func checkIfRepoExists(ctx context.Context, gc *github.Client, u string, r string) {
+func checkIfRepoExists(ctx context.Context, gc *github.Client, u string, r string) error {
 	_, _, err := gc.Repositories.Get(ctx, u, r)
 	if err != nil {
-		log.Fatalf("Repo is not found %+v\n", err)
+		return err
 	}
+	return nil
 }
 
 func createCommit(ctx context.Context, gc *github.Client, u string, r string, file string, content string, commit string) error {
