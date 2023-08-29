@@ -7,14 +7,6 @@ import (
 	"time"
 )
 
-// TODOs
-//
-// Creata a commit
-// Make a commit to commits.txt
-// Create a server?
-// Create a cron job with GCP
-// Write basic tests
-
 func main() {
 
 	loadEnv()
