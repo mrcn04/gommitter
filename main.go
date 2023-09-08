@@ -24,7 +24,7 @@ func main() {
 	}
 
 	commit := "Daily automated commit"
-	file := "commits.txt"
+	file := "commit.txt"
 	content := fmt.Sprintf("Committed on: %+v\n", time.Now().Format("2006-1-2 15:4"))
 
 	fmt.Println(content)
