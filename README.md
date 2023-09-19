@@ -2,7 +2,7 @@
 
 Daily automatic committer for Github.
 
-### Getting Started
+### Running the App
 
 ```
 make run
