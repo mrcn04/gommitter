@@ -27,8 +27,6 @@ func main() {
 	file := "commit.txt"
 	content := fmt.Sprintf("Committed on: %+v\n", time.Now().Format("2006-1-2 15:4"))
 
-	// fmt.Println(content)
-
 	err = createCommit(ctx, gc, u, r, file, content, commit)
 	if err != nil {
 		fmt.Printf("Error occurred while creating a commit %+v\n", err)

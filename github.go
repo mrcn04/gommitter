@@ -39,21 +39,8 @@ func createCommit(ctx context.Context, gc *github.Client, u string, r string, fi
 		return err
 	}
 
-	// Get the existing content of the file
-	ec, _, _, err := gc.Repositories.GetContents(ctx, u, r, file, &github.RepositoryContentGetOptions{
-		Ref: *db.Commit.SHA,
-	})
-	if err != nil {
-		fmt.Println(4)
-		return err
-	}
-
-	// Combine existing content and new content with a newline
-	updatedContent := *ec.Content + "\n" + content
-	fmt.Printf("%+v\n", updatedContent)
-
 	newBlob, _, err := gc.Git.CreateBlob(ctx, u, r, &github.Blob{
-		Content:  github.String(updatedContent),
+		Content:  github.String(content),
 		Encoding: github.String("utf-8"),
 	})
 	if err != nil {
@@ -67,6 +54,7 @@ func createCommit(ctx context.Context, gc *github.Client, u string, r string, fi
 		fmt.Println(1)
 		return err
 	}
+
 	// Add the new file entry to the existing tree
 	newTreeEntries := append(tree.Entries, &github.TreeEntry{
 		Path: github.String(file),
@@ -97,6 +85,7 @@ func createCommit(ctx context.Context, gc *github.Client, u string, r string, fi
 			SHA:  newCommit.SHA,
 		},
 	}, true)
+
 	if err != nil {
 		return err
 	}
@@ -105,6 +94,9 @@ func createCommit(ctx context.Context, gc *github.Client, u string, r string, fi
 	return nil
 }
 
+//
+// For updating the wanted file directly using Repository API
+//
 // func createCommit(ctx context.Context, gc *github.Client, u string, r string, file string, content string, commit string) error {
 // 	// Get the latest commit SHA of the default branch
 // 	latestCommit, _, _ := gc.Repositories.GetBranch(ctx, u, r, "master", false)
