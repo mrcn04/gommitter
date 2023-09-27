@@ -14,12 +14,8 @@ RUN go mod download
 COPY *.go ./
 
 ARG GH_KEY
-ARG GH_USERNAME
-ARG REPO_NAME
 
 ENV GH_KEY=${GH_KEY}
-ENV GH_USERNAME=${GH_USERNAME}
-ENV REPO_NAME=${REPO_NAME}
 
 # Build
 RUN CGO_ENABLED=0 GOOS=linux go build -o /gommitter-app
