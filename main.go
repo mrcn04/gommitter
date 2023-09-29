@@ -24,7 +24,7 @@ func main() {
 
 	err = createCommit(ctx, gc, file, content, commit)
 	if err != nil {
-		fmt.Printf("Error occurred while creating a commit %+v\n", err)
+		fmt.Printf("Error occurred while creating a commit: %+v\n", err)
 		return
 	}
 }
