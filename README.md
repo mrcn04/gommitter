@@ -1,6 +1,8 @@
 ## gommitter
 
-Daily automatic committer for Github.
+Daily automatic committer for Github. E.g. use case; the company that you're working at isn't using Github
+and you don't want your commit history to look empty. You can adjust the daily commit count when creating
+the GCP job.
 
 ### Running the App
 

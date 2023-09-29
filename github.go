@@ -9,12 +9,6 @@ import (
 	"golang.org/x/oauth2"
 )
 
-const (
-	Branch = "master"
-	Type   = "commit"
-	Ref    = "refs/heads/master"
-)
-
 func createGithubClient(ctx context.Context) *github.Client {
 	t := os.Getenv("GH_KEY")
 	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: t})
@@ -24,22 +18,23 @@ func createGithubClient(ctx context.Context) *github.Client {
 	return client
 }
 
-func checkIfRepoExists(ctx context.Context, gc *github.Client, u string, r string) error {
-	_, _, err := gc.Repositories.Get(ctx, u, r)
+func checkIfRepoExists(ctx context.Context, gc *github.Client) error {
+	_, _, err := gc.Repositories.Get(ctx, User, Repo)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func createCommit(ctx context.Context, gc *github.Client, u string, r string, file string, content string, commit string) error {
+func createCommit(ctx context.Context, gc *github.Client, file string, content string, commit string) error {
+	fmt.Println("Creating a commit...")
 	// Get the default branch
-	db, _, err := gc.Repositories.GetBranch(ctx, u, r, Branch, false)
+	db, _, err := gc.Repositories.GetBranch(ctx, User, Repo, Branch, false)
 	if err != nil {
 		return err
 	}
 
-	newBlob, _, err := gc.Git.CreateBlob(ctx, u, r, &github.Blob{
+	newBlob, _, err := gc.Git.CreateBlob(ctx, User, Repo, &github.Blob{
 		Content:  github.String(content),
 		Encoding: github.String("utf-8"),
 	})
@@ -49,7 +44,7 @@ func createCommit(ctx context.Context, gc *github.Client, u string, r string, fi
 	}
 
 	// Get the tree associated with the latest commit
-	tree, _, err := gc.Git.GetTree(ctx, u, r, *db.Commit.SHA, true)
+	tree, _, err := gc.Git.GetTree(ctx, User, Repo, *db.Commit.SHA, true)
 	if err != nil {
 		fmt.Println(1)
 		return err
@@ -64,10 +59,10 @@ func createCommit(ctx context.Context, gc *github.Client, u string, r string, fi
 	})
 
 	// Create a new tree with the updated tree entries
-	newTree, _, _ := gc.Git.CreateTree(ctx, u, r, *tree.SHA, newTreeEntries)
+	newTree, _, _ := gc.Git.CreateTree(ctx, User, Repo, *tree.SHA, newTreeEntries)
 
 	// Create a new commit based on the new tree
-	newCommit, _, err := gc.Git.CreateCommit(ctx, u, r, &github.Commit{
+	newCommit, _, err := gc.Git.CreateCommit(ctx, User, Repo, &github.Commit{
 		Message: github.String(commit),
 		Tree:    newTree,
 		Parents: []*github.Commit{{SHA: db.Commit.SHA}},
@@ -78,7 +73,7 @@ func createCommit(ctx context.Context, gc *github.Client, u string, r string, fi
 	}
 
 	// Update the reference (branch) to point to the new commit
-	_, _, err = gc.Git.UpdateRef(ctx, u, r, &github.Reference{
+	_, _, err = gc.Git.UpdateRef(ctx, User, Repo, &github.Reference{
 		Ref: github.String(Ref),
 		Object: &github.GitObject{
 			Type: github.String(Type),
@@ -90,7 +85,7 @@ func createCommit(ctx context.Context, gc *github.Client, u string, r string, fi
 		return err
 	}
 
-	fmt.Printf("New commit SHA: %s\n Commit message: %s\n", *newCommit.SHA, *newCommit.Message)
+	fmt.Printf("Created commit message: %s\n", *newCommit.Message)
 	return nil
 }
 
