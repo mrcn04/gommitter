@@ -85,7 +85,7 @@ func createCommit(ctx context.Context, gc *github.Client, file string, content s
 		return err
 	}
 
-	fmt.Printf("Created commit message: %s\n", *newCommit.Message)
+	fmt.Printf("Commit created: %s\n", *newCommit.Message)
 	return nil
 }
 
