@@ -5,9 +5,24 @@ steps:
       [
         "build",
         "-t",
-        "eu-west1-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/myimage:$SHORT_SHA",
+        "us-west1-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/myimage:$SHORT_SHA",
         ".",
       ]
 
-options:
-  logging: CLOUD_LOGGING_ONLY
+  # Docker push to Google Artifact Registry
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "us-west1-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/myimage:$SHORT_SHA",
+      ]
+
+# Save test logs to Google Cloud Storage
+artifacts:
+  objects:
+    location: gs://$_BUCKET_NAME/
+    paths:
+      - ${SHORT_SHA}_test_log.xml
+# Store images in Google Artifact Registry
+images:
+  - us-west1-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/myimage:$SHORT_SHA
