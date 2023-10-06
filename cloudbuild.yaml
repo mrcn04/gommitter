@@ -1,7 +1,13 @@
 steps:
-  # Run tests and save to file
-  - name: golang:1.20
-    entrypoint: /bin
+  # Docker Build
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "eu-west1-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/myimage:$SHORT_SHA",
+        ".",
+      ]
 
 options:
   logging: CLOUD_LOGGING_ONLY
