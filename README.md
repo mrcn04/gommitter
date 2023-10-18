@@ -16,6 +16,7 @@ make run
 
 ```shell
 GH_KEY=  # Github personal access token
+PORT=
 ```
 
 #### Configuration
