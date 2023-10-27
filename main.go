@@ -43,6 +43,8 @@ func handleCommit(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("Error occurred while creating a commit: %+v\n", err)
 		return
 	}
+
+	w.Write([]byte("Success!"))
 }
 
 func hello(w http.ResponseWriter, r *http.Request) {
