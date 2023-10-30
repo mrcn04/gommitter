@@ -8,8 +8,8 @@ dev:
 	@go run ./
 
 build-docker:
-	@docker build --build-arg GH_KEY=<your_key> -t gommitter .
+	@docker build --tag gommitter-gcp --platform linux/amd64 .
 
 run-docker:
-	@docker run -e GH_KEY=<your_key>  gommitter
+	@docker run -p 8081:8081 gommitter-gcp
 	
