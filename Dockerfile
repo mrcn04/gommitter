@@ -12,7 +12,8 @@ COPY . .
 # Build
 RUN CGO_ENABLED=0 GOOS=linux go build -o /gommitter-app
 
-EXPOSE 8080
+ENV PORT=8081
+EXPOSE 8081
 
 # Run
 CMD ["/gommitter-app"]
