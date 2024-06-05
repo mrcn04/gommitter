@@ -28,6 +28,7 @@ func checkIfRepoExists(ctx context.Context, gc *github.Client) error {
 
 func createCommit(ctx context.Context, gc *github.Client, file string, content string, commit string) error {
 	fmt.Println("Creating a commit...")
+
 	// Get the default branch
 	db, _, err := gc.Repositories.GetBranch(ctx, User, Repo, Branch, false)
 	if err != nil {
@@ -39,14 +40,12 @@ func createCommit(ctx context.Context, gc *github.Client, file string, content s
 		Encoding: github.String("utf-8"),
 	})
 	if err != nil {
-		fmt.Println(2)
 		return err
 	}
 
 	// Get the tree associated with the latest commit
 	tree, _, err := gc.Git.GetTree(ctx, User, Repo, *db.Commit.SHA, true)
 	if err != nil {
-		fmt.Println(1)
 		return err
 	}
 
@@ -68,7 +67,6 @@ func createCommit(ctx context.Context, gc *github.Client, file string, content s
 		Parents: []*github.Commit{{SHA: db.Commit.SHA}},
 	})
 	if err != nil {
-		fmt.Println(3)
 		return err
 	}
 
